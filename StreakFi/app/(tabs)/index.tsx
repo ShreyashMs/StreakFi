@@ -1,7 +1,6 @@
 import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -18,11 +17,10 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">This app will win the Hackathon</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText type="subtitle">What This App Have</ThemedText>
         <ThemedText>
           Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
           Press{' '}
@@ -96,3 +94,4 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+// ElementHEX CodePreview / DescriptionPrimary Action (Purple/Blue)#7000FFThe bold purple used for the "Get Started" and "Connect Phantom/Solfare" buttons.Flame/Streak Primary (Orange)#FF8800The core orange in the fire graphic and streak counts.Flame/Streak Secondary (Yellow)#FFBF00The inner yellow glow of the fire.Completed Task (Vibrant Teal)#00DDBBUsed for the + add buttons and completion checkmarks in the navigation.Leaderboard Ring Gold (1st Place)#FFD700The gold ring around the top user's profile picture.Text (On Light Backgrounds)#000000Pure black or very dark grey for maximum readability.Text (On Dark Backgrounds)#FFFFFFPure white for max readability on dark backgrounds.2. Light Mode System ColorsThis palette defines the backgrounds, containers, and borders for the Light Mode screens shown in the prototype.ElementHEX CodePreview / DescriptionApp Background#F5F5F5The very light grey background of the screens.Container Background#FFFFFFThe pure white used for cards, lists, and main content blocks.Primary Container Background#F1EDFFThe soft lavender background used in the app headers and key sections (e.g., in the Leaderboard detail).Secondary Container Background#FFE4CCThe light beige/orange container background used for other key sections (e.g., in the Booster list).Soft Border / Divider#E0E0E0Subtler grey for list dividers and container outlines.Input / Search Background#F0F0F0Light grey background for the search inputs.3. Dark Mode System ColorsThis palette defines the dark backgrounds, containers, and borders for the Dark Mode screens.ElementHEX CodePreview / DescriptionApp Background (Master)#0C0C14The very dark background color of the entire app interface.Container Background (Level 1)#1C1C26The primary dark grey background for main cards and list items.Container Background (Level 2)#292936A slightly lighter dark grey for elevated sections and nested containers.Header / Focus Background#14141EA specific dark tone used for screen headers and focus states.Input / Search Background#20202BThe dark grey background for inputs.Border / Divider#323242A darker, subtle grey for outlines and line dividers.
