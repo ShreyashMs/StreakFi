@@ -8,14 +8,14 @@ import XPProgressBar from "../ui/XPProgressBar";
 
 export default function Dashboard() {
   return (
-    <View style={{ flex: 1, backgroundColor: "#F6F6FB" }}>
+    <View style={{ flex: 1, backgroundColor: "#F6F6FB",borderRadius: 20, overflow: "hidden" }}>
       <GradientHeader title="StreakFi" />
 
       <ScrollView style={{ padding: 20 }}>
 
         <Card>
           <Text style={{ fontWeight: "600" }}>Current Streak</Text>
-          <FlameStreak count={5} />
+          <FlameStreak count={7} />
         </Card>
 
         <Card>
@@ -36,9 +36,7 @@ export default function Dashboard() {
         </Card>
 
       </ScrollView>
-
       <FloatingActionButton />
-
     </View>
   );
 }
