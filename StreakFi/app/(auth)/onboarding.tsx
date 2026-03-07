@@ -4,18 +4,18 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function Onboarding() {
   return (
-    <LinearGradient colors={["#3b1c80", "#0a0f2c"]} style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
       <Text style={styles.emoji}>🔥</Text>
 
       <Text style={styles.title}>Welcome to StreakFi</Text>
 
       <Text style={styles.desc}>
-        Build streaks, earn XP, and unlock NFT rewards.
+        Build streaks, earn XP and unlock NFT rewards.
       </Text>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/intro")}
+        onPress={() => router.push("/(auth)/intro")}
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
@@ -24,20 +24,15 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  emoji: { fontSize: 80, marginBottom: 20 },
-  title: { color: "#fff", fontSize: 24, fontWeight: "bold" },
-  desc: { color: "#ccc", textAlign: "center", marginVertical: 20 },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  emoji: { fontSize: 80 },
+  title: { color: "white", fontSize: 26, fontWeight: "bold", marginTop: 20 },
+  desc: { color: "#cbd5f5", textAlign: "center", marginVertical: 20 },
   button: {
-    backgroundColor: "#7a5cff",
-    paddingVertical: 14,
-    paddingHorizontal: 40,
+    backgroundColor: "#7c3aed",
+    padding: 15,
     borderRadius: 25,
+    paddingHorizontal: 40,
   },
-  buttonText: { color: "#fff", fontWeight: "bold" },
+  buttonText: { color: "white", fontWeight: "bold" },
 });
