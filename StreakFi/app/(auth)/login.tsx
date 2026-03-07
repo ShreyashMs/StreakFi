@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -18,7 +19,10 @@ export default function Login() {
 
       console.log("Wallet:", walletAddress);
 
-      router.replace("/(main)/home");
+      await AsyncStorage.setItem("wallet", walletAddress);
+
+      // navigate to main app
+      router.replace("/(tabs)/home");
 
     } catch (error) {
       console.log(error);
@@ -38,6 +42,7 @@ export default function Login() {
       <TouchableOpacity
         style={styles.button}
         onPress={connectWallet}
+        disabled={loading}
       >
         <Text style={styles.buttonText}>
           {loading ? "Connecting..." : "Connect Phantom / Solflare"}
