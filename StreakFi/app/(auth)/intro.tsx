@@ -7,14 +7,14 @@ export default function Intro() {
     <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
       <Text style={styles.icon}>💎</Text>
 
-      <Text style={styles.title}>NFT & Booster Introduction</Text>
+      <Text style={styles.title}>NFTs & Boosters</Text>
 
       <Text style={styles.desc}>
-        Explore NFT rewards and booster mechanics to grow your streak.
+        Explore NFTs rewards and booster mechanics to grow your streak.
       </Text>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🚀 SKR Booster</Text>
+        <Text style={styles.cardTitle}>🚀  Booster for you </Text>
         <Text style={styles.cardText}>
           Boost your streak rewards with special NFT boosters.
         </Text>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 30,
   },
-  cardTitle: { color: "white", fontWeight: "bold" },
+  cardTitle: { color: "white", fontWeight: "bold",marginVertical:5 },
   cardText: { color: "#94a3b8" },
   button: {
     backgroundColor: "#7c3aed",

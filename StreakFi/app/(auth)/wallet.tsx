@@ -9,15 +9,8 @@ export default function Wallet() {
 
       <Text style={styles.title}>Connect Your Wallet</Text>
 
-      <TouchableOpacity style={styles.walletBtn}>
+      <TouchableOpacity style={styles.walletBtn} onPress={() => router.push("/(auth)/login")}>
         <Text style={styles.walletText}>Connect Phantom / Solflare</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.emailBtn}
-        onPress={() => router.push("/(auth)/login")}
-      >
-        <Text style={styles.walletText}>Use Email Instead</Text>
       </TouchableOpacity>
 
       <Text style={styles.footer}>Secure Web3 authentication</Text>
