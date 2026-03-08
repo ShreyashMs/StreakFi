@@ -1,8 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const getDateString = (date: Date) => {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  ).toDateString();
+};
+
 export const updateLoginStreak = async () => {
 
-  const today = new Date().toDateString();
+  const today = getDateString(new Date());
 
   const lastLogin = await AsyncStorage.getItem("lastLogin");
   const currentStreak = await AsyncStorage.getItem("loginStreak");
@@ -13,21 +21,18 @@ export const updateLoginStreak = async () => {
     streak = 1;
   } else {
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-    if (lastLogin === yesterday.toDateString()) {
-      streak += 1;
-    }
+    const yesterday = getDateString(yesterdayDate);
 
     if (lastLogin === today) {
       return;
     }
 
-    if (
-      lastLogin !== yesterday.toDateString() &&
-      lastLogin !== today
-    ) {
+    if (lastLogin === yesterday) {
+      streak += 1;
+    } else {
       streak = 1;
     }
 
@@ -36,4 +41,5 @@ export const updateLoginStreak = async () => {
   await AsyncStorage.setItem("loginStreak", streak.toString());
   await AsyncStorage.setItem("lastLogin", today);
 
+  return streak;
 };

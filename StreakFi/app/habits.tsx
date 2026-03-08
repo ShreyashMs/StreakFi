@@ -1,17 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import {
   Alert,
   FlatList,
   Platform,
+  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { HABIT_SUGGESTIONS } from "../constants/habits";
 import { createHabit } from "../services/habitService";
 
@@ -62,79 +63,82 @@ export default function CreateHabit() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
+    <LinearGradient  colors={["#4c1d95", "#0f172a"]} style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
 
-        <Text style={styles.title}>Create Habit</Text>
+        <View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Search habit..."
-          placeholderTextColor="#94a3b8"
-          value={title}
-          onChangeText={handleSearch}
-        />
+          <Text style={styles.title}>Create Habit</Text>
 
-        {suggestions.length > 0 && (
-          <FlatList
-            data={suggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Search habit..."
+            placeholderTextColor="#94a3b8"
+            value={title}
+            onChangeText={handleSearch}
+          />
+
+          {suggestions.length > 0 && (
+            <FlatList
+              data={suggestions}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.suggestion}
+                  onPress={() => selectHabit(item)}
+                >
+                  <Text style={styles.suggestionText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          )}
+
+          <TouchableOpacity
+            style={styles.timeButton}
+            onPress={() => setShowPicker(true)}
+          >
+            <Text style={styles.timeText}>
+              Reminder: {time.toLocaleTimeString()}
+            </Text>
+          </TouchableOpacity>
+
+          {showPicker && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="default"
+              is24Hour={true}
+              onChange={(event, selectedDate) => {
+                setShowPicker(Platform.OS === "ios");
+                if (selectedDate) setTime(selectedDate);
+              }}
+            />
+          )}
+
+          <Text style={styles.label}>Duration</Text>
+
+          <View style={styles.durationContainer}>
+            {[5, 10, 20, 30, 60].map((d) => (
               <TouchableOpacity
-                style={styles.suggestion}
-                onPress={() => selectHabit(item)}
+                key={d}
+                style={[
+                  styles.durationChip,
+                  duration === d && styles.selectedChip,
+                ]}
+                onPress={() => setDuration(d)}
               >
-                <Text style={styles.suggestionText}>{item}</Text>
+                <Text style={styles.durationText}>{d} min</Text>
               </TouchableOpacity>
-            )}
-          />
-        )}
+            ))}
+          </View>
 
-        <TouchableOpacity
-          style={styles.timeButton}
-          onPress={() => setShowPicker(true)}
-        >
-          <Text style={styles.timeText}>
-            Reminder: {time.toLocaleTimeString()}
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleCreate}>
+            <Text style={styles.buttonText}>Create Habit</Text>
+          </TouchableOpacity>
 
-        {showPicker && (
-          <DateTimePicker
-            value={time}
-            mode="time"
-            display="default"
-            is24Hour={true}
-            onChange={(event, selectedDate) => {
-              setShowPicker(Platform.OS === "ios");
-              if (selectedDate) setTime(selectedDate);
-            }}
-          />
-        )}
-
-        <Text style={styles.label}>Duration</Text>
-
-        <View style={styles.durationContainer}>
-          {[5, 10, 20, 30, 60].map((d) => (
-            <TouchableOpacity
-              key={d}
-              style={[
-                styles.durationChip,
-                duration === d && styles.selectedChip,
-              ]}
-              onPress={() => setDuration(d)}
-            >
-              <Text style={styles.durationText}>{d} min</Text>
-            </TouchableOpacity>
-          ))}
         </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleCreate}>
-          <Text style={styles.buttonText}>Create Habit</Text>
-        </TouchableOpacity>
-
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
@@ -142,8 +146,6 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    padding: 20,
   },
 
   title: {

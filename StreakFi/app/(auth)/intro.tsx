@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 30,
   },
-  cardTitle: { color: "white", fontWeight: "bold",marginVertical:5 },
+  cardTitle: { color: "white", fontWeight: "bold", marginVertical: 5 },
   cardText: { color: "#94a3b8" },
   button: {
     backgroundColor: "#7c3aed",

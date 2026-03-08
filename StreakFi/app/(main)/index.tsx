@@ -2,8 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-// import "../../polyfills";
+
+import { Buffer } from "buffer";
+import "react-native-get-random-values";
 import { updateLoginStreak } from "../../utils/loginStreak";
+
+global.Buffer = Buffer;
 
 export default function Index() {
 
@@ -13,7 +17,10 @@ export default function Index() {
   useEffect(() => {
 
     const checkWallet = async () => {
+
       const storedWallet = await AsyncStorage.getItem("wallet");
+
+      console.log("Stored wallet: ", storedWallet);
 
       setWallet(storedWallet);
       setChecked(true);
@@ -21,7 +28,6 @@ export default function Index() {
 
     checkWallet();
     updateLoginStreak();
-
 
   }, []);
 
@@ -34,5 +40,5 @@ export default function Index() {
     return <Redirect href="/(tabs)/home" />;
   }
 
-  return <Redirect href="/(auth)/login" />;
+  return <Redirect href="/(auth)/onboarding" />;
 }

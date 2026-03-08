@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState } from "react";
 import {
   Alert,
@@ -9,7 +10,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { deleteHabit, getHabits } from "../../services/habitService";
 
 export default function HabitsPage() {
@@ -126,8 +126,7 @@ export default function HabitsPage() {
 
   return (
 
-    <SafeAreaView style={styles.container}>
-
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
       <Text style={styles.header}>My Habits</Text>
 
       <Text style={styles.section}>Active Habits</Text>
@@ -146,20 +145,14 @@ export default function HabitsPage() {
         keyExtractor={(item) => item.id}
       />
 
-    </SafeAreaView>
+    </LinearGradient>
 
   );
 
 }
 
 const styles = StyleSheet.create({
-
-  container: {
-    flex: 1,
-    backgroundColor: "#0f172a",
-    padding: 20
-  },
-
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
   header: {
     fontSize: 28,
     color: "white",

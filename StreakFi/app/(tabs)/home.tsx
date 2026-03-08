@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HabitCard from "../../components/habitCard";
 import StatCard from "../../components/StatCard";
 import useHabits from "../../hooks/useHabits";
@@ -73,87 +73,87 @@ export default function Home() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Dashboard</Text>
+        <View style={styles.levelCard}>
 
-      <Text style={styles.title}>Dashboard</Text>
-      <View style={styles.levelCard}>
+          <Text style={styles.levelText}>
+            Level {level}
+          </Text>
 
-        <Text style={styles.levelText}>
-          Level {level}
-        </Text>
+          <View style={styles.xpBar}>
+            <View
+              style={[
+                styles.xpFill,
+                { width: `${(xp / nextXP) * 100}%` }
+              ]}
+            />
+          </View>
 
-        <View style={styles.xpBar}>
-          <View
-            style={[
-              styles.xpFill,
-              { width: `${(xp / nextXP) * 100}%` }
-            ]}
-          />
+          <Text style={styles.xpText}>
+            {xp} / {nextXP} XP
+          </Text>
+
         </View>
 
-        <Text style={styles.xpText}>
-          {xp} / {nextXP} XP
-        </Text>
+        {/* Stats Row */}
 
-      </View>
-
-      {/* Stats Row */}
-
-      <View style={styles.statsRow}>
-        {/* <StatCard
+        <View style={styles.statsRow}>
+          {/* <StatCard
           number={loginStreak}
           label="Login Streak"
         /> */}
 
-        <StatCard
-          number={totalHabits}
-          label="Habits"
-        />
+          <StatCard
+            number={totalHabits}
+            label="Habits"
+          />
 
-        <StatCard
-          number={xpToday}
-          label="XP Today"
-        />
+          <StatCard
+            number={xpToday}
+            label="XP Today"
+          />
 
-        <StatCard
-          number={highestStreak}
-          label="Best Streak"
-        />
+          <StatCard
+            number={highestStreak}
+            label="Best Streak"
+          />
 
-      </View>
+        </View>
 
-      {/* Top Habits */}
+        {/* Top Habits */}
 
-      <View style={styles.sectionHeader}>
+        <View style={styles.sectionHeader}>
 
-        <Text style={styles.sectionTitle}>
-          Top Streak Habits
-        </Text>
-
-        <TouchableOpacity
-          onPress={() => router.push("/allHabits")}
-        >
-          <Text style={styles.viewAll}>
-            View All
+          <Text style={styles.sectionTitle}>
+            Top Streak Habits
           </Text>
-        </TouchableOpacity>
 
-      </View>
+          <TouchableOpacity
+            onPress={() => router.push("/allHabits")}
+          >
+            <Text style={styles.viewAll}>
+              View All
+            </Text>
+          </TouchableOpacity>
 
-      <FlatList
-        data={topHabits}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <HabitCard habit={item} />
-        )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No habits created yet
-          </Text>
-        }
-      />
+        </View>
 
-    </SafeAreaView>
+        <FlatList
+          data={topHabits}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <HabitCard habit={item} />
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No habits created yet
+            </Text>
+          }
+        />
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
     padding: 20,
   },
 

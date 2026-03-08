@@ -1,15 +1,30 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 
-export const checkInHabit = async (habitId:string, wallet:string) => {
+export const checkInHabit = async (habitId: string, wallet: string) => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  await addDoc(collection(db,"habitLogs"),{
+  const q = query(
+    collection(db, "habitLogs"),
+    where("habitId", "==", habitId),
+    where("wallet","==",wallet),
+    where("date", "==", today)
+  );
+
+  const existing = await getDocs(q);
+
+  if (!existing.empty) {
+    return false;
+  }
+
+  await addDoc(collection(db, "habitLogs"), {
     habitId,
-    userId: wallet,
+    wallet: wallet,
     date: today,
-    completed: true
+    completed: true,
+    createdAt: Date.now()
   });
 
+  return true;
 };

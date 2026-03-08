@@ -1,13 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Clipboard from "expo-clipboard";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { disconnectWallet } from "../../services/walletService";
 
 export default function Profile() {
 
   const [wallet, setWallet] = useState<string | null>(null);
   const [xp, setXP] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
 
@@ -25,54 +28,78 @@ export default function Profile() {
 
   }, []);
 
+  const shortenWallet = (w: string) =>
+    w.slice(0, 4) + "..." + w.slice(-4);
+
+  const copyWallet = async () => {
+
+    if (!wallet) return;
+
+    await Clipboard.setStringAsync(wallet);
+    alert("Wallet address copied!");
+
+  };
+
   const logout = async () => {
 
     await disconnectWallet();
     setWallet(null);
 
+    router.replace("/(auth)/onboarding");
+
   };
 
   return (
 
-    <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
+      <SafeAreaView style={styles.container}>
 
-      <Text style={styles.header}>
-        Profile
-      </Text>
-
-      <View style={styles.card}>
-
-        <Text style={styles.label}>
-          Wallet
+        <Text style={styles.header}>
+          Profile
         </Text>
 
-        {/* {!wallet && (
-          <ConnectWalletButton onConnected={(w: any) => setWallet(w)} />
-        )} */}
-      </View>
+        <View style={styles.card}>
 
-      <View style={styles.card}>
+          <Text style={styles.label}>
+            Wallet
+          </Text>
 
-        <Text style={styles.label}>
-          Total XP
-        </Text>
+          <Text style={styles.wallet}>
+            {wallet ? shortenWallet(wallet) : "Not connected"}
+          </Text>
 
-        <Text style={styles.value}>
-          {xp}
-        </Text>
+          {wallet && (
+            <TouchableOpacity onPress={copyWallet}>
+              <Text style={styles.copy}>
+                Copy Address
+              </Text>
+            </TouchableOpacity>
+          )}
 
-      </View>
+        </View>
 
-      <TouchableOpacity
-        style={styles.logout}
-        onPress={logout}
-      >
-        <Text style={styles.logoutText}>
-          Disconnect Wallet
-        </Text>
-      </TouchableOpacity>
+        <View style={styles.card}>
 
-    </SafeAreaView>
+          <Text style={styles.label}>
+            Total XP
+          </Text>
+
+          <Text style={styles.value}>
+            {xp}
+          </Text>
+
+        </View>
+
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={logout}
+        >
+          <Text style={styles.logoutText}>
+            Disconnect Wallet
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </LinearGradient>
 
   );
 
@@ -82,8 +109,6 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    padding: 20
   },
 
   header: {
@@ -107,6 +132,11 @@ const styles = StyleSheet.create({
   wallet: {
     color: "white",
     fontSize: 16
+  },
+
+  copy: {
+    color: "#38bdf8",
+    marginTop: 10
   },
 
   value: {

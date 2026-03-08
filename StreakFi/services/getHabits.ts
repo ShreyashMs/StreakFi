@@ -4,8 +4,8 @@ import { db } from "./firebase";
 export const getHabits = async (wallet: string) => {
 
   const q = query(
-    collection(db,"habits"),
-    where("userId","==",wallet)
+    collection(db, "habits"),
+    where("wallet", "==", wallet)
   );
 
   const snapshot = await getDocs(q);
@@ -14,5 +14,4 @@ export const getHabits = async (wallet: string) => {
     id: doc.id,
     ...doc.data()
   }));
-
 };

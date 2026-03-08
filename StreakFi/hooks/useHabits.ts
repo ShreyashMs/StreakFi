@@ -20,7 +20,22 @@ export default function useHabits() {
 
   useFocusEffect(
     useCallback(() => {
-      loadHabits();
+      let mounted = true;
+
+      const fetch = async () => {
+        const wallet = await AsyncStorage.getItem("wallet");
+        if (!wallet) return;
+
+        const data = await getHabits(wallet);
+
+        if (mounted) setHabits(data);
+      };
+
+      fetch();
+
+      return () => {
+        mounted = false;
+      };
     }, [])
   );
 

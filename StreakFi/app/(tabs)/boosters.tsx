@@ -1,19 +1,72 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { activateXPBooster } from "../../utils/boosterSystem";
 
 export default function Boosters() {
 
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  const loadBooster = async () => {
+
+    const expiry = await AsyncStorage.getItem("boosterExpiry");
+
+    if (!expiry) return;
+
+    const diff = parseInt(expiry) - Date.now();
+
+    if (diff > 0) {
+      setRemaining(diff);
+    }
+
+  };
+
+  useEffect(() => {
+
+    loadBooster();
+
+    const interval = setInterval(() => {
+      loadBooster();
+    }, 60000);
+
+    return () => clearInterval(interval);
+
+  }, []);
+
   const activateBooster = async () => {
+
     await activateXPBooster();
-    alert("⚡ XP Booster Activated for 24 hours!");
+
+    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+
+    await AsyncStorage.setItem(
+      "boosterExpiry",
+      expiry.toString()
+    );
+
+    setRemaining(expiry - Date.now());
+
+  };
+
+  const formatTime = (ms: number) => {
+
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor(
+      (ms % (1000 * 60 * 60)) / (1000 * 60)
+    );
+
+    return `${hours}h ${minutes}m`;
+
   };
 
   return (
 
-    <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
 
-      <Text style={styles.header}>Boosters</Text>
+      <Text style={styles.header}>
+        Boosters
+      </Text>
 
       <View style={styles.card}>
 
@@ -25,18 +78,28 @@ export default function Boosters() {
           Earn 2x XP for the next 24 hours
         </Text>
 
+        {remaining ? (
+          <Text style={styles.active}>
+            Active: {formatTime(remaining)} remaining
+          </Text>
+        ) : null}
+
         <TouchableOpacity
-          style={styles.button}
+          style={[
+            styles.button,
+            remaining && { backgroundColor: "#64748b" }
+          ]}
+          disabled={!!remaining}
           onPress={activateBooster}
         >
           <Text style={styles.buttonText}>
-            Activate
+            {remaining ? "Active" : "Activate"}
           </Text>
         </TouchableOpacity>
 
       </View>
 
-    </SafeAreaView>
+    </LinearGradient>
 
   );
 
@@ -44,11 +107,7 @@ export default function Boosters() {
 
 const styles = StyleSheet.create({
 
-  container: {
-    flex: 1,
-    backgroundColor: "#0f172a",
-    padding: 20
-  },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
 
   header: {
     color: "white",
@@ -70,7 +129,12 @@ const styles = StyleSheet.create({
 
   desc: {
     color: "#94a3b8",
-    marginBottom: 15
+    marginBottom: 10
+  },
+
+  active: {
+    color: "#22c55e",
+    marginBottom: 10
   },
 
   button: {

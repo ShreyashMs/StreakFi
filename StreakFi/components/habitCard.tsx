@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { completeHabit } from "../services/habitService";
 
-export default function HabitCard({ habit }: any) {
+export default function HabitCard({ habit, onCompleted }: any) {
 
     const now = new Date();
     const reminder = new Date(habit.reminderTime);
@@ -10,8 +10,12 @@ export default function HabitCard({ habit }: any) {
     endTime.setMinutes(endTime.getMinutes() + habit.duration);
 
     const isClaimable = now >= endTime;
-    const isExpired = habit.expiryDate && new Date(habit.expiryDate) < now;
-    const isClaimed = habit.lastCompleted;
+    const expiry =
+        habit.expiryDate?.seconds
+            ? new Date(habit.expiryDate.seconds * 1000)
+            : new Date(habit.expiryDate);
+
+    const isExpired = expiry && expiry < now; const isClaimed = habit.lastCompleted;
 
     const progress = Math.min(
         ((now.getTime() - reminder.getTime()) /
@@ -21,7 +25,10 @@ export default function HabitCard({ habit }: any) {
 
     const handleClaim = async () => {
         if (!isClaimable || isClaimed) return;
+
         await completeHabit(habit.id);
+
+        if (onCompleted) onCompleted();
     };
 
     return (

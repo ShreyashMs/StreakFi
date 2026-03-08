@@ -1,9 +1,12 @@
-export const calculateXP = (duration: number) => {
+export const calculateXP = (duration: number, multiplier = 1) => {
 
-  if (duration <= 5) return 5;
-  if (duration <= 10) return 10;
-  if (duration <= 20) return 20;
-  if (duration <= 30) return 30;
-  return 50;
+  let xp = 0;
 
+  if (duration <= 5) xp = 5;
+  else if (duration <= 10) xp = 10;
+  else if (duration <= 20) xp = 20;
+  else if (duration <= 30) xp = 30;
+  else xp = 50;
+
+  return xp * multiplier;
 };

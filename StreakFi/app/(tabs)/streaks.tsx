@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { getHabits } from "../../services/habitService";
 
 export default function Streaks() {
@@ -12,6 +12,7 @@ export default function Streaks() {
   const loadHabits = async () => {
 
     const wallet = await AsyncStorage.getItem("wallet");
+
     if (!wallet) return;
 
     const data = await getHabits(wallet);
@@ -53,25 +54,37 @@ export default function Streaks() {
       <Text style={styles.streak}>
         🔥 {item.streak || 0}
       </Text>
+
     </View>
 
   );
 
   return (
 
-    <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
+      <SafeAreaView style={styles.container}>
 
-      <Text style={styles.header}>
-        Streak Leaderboard
-      </Text>
+        <Text style={styles.header}>
+          Streaks
+        </Text>
 
-      <FlatList
-        data={habits}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+        {habits.length === 0 ? (
 
-    </SafeAreaView>
+          <Text style={styles.empty}>
+            No habits yet. Create your first habit!
+          </Text>
+
+        ) : (
+
+          <FlatList
+            data={habits}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+
+        )}
+      </SafeAreaView>
+    </LinearGradient>
 
   );
 
@@ -81,14 +94,17 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    padding: 20
   },
 
   header: {
     fontSize: 28,
     color: "white",
     marginBottom: 20
+  },
+
+  empty: {
+    color: "#94a3b8",
+    marginTop: 40
   },
 
   card: {

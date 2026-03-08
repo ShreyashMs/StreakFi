@@ -21,8 +21,9 @@ export const connectWallet = async () => {
 
     });
 
-    const walletAddress = new PublicKey(result).toBase58();
-
+    const walletAddress = new PublicKey(
+      Buffer.from(result, "base64")
+    ).toBase58();
     await AsyncStorage.setItem("wallet", walletAddress);
 
     return walletAddress;
