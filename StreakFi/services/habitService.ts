@@ -102,10 +102,17 @@ export const completeHabit = async (habitId: string) => {
     } else {
         newStreak = 1;
     }
+    const completedDates = habit.completedDates || [];
 
+    const todayString = new Date().toDateString();
+
+    if (!completedDates.includes(todayString)) {
+        completedDates.push(todayString);
+    }
     await updateDoc(habitRef, {
         streak: newStreak,
         lastCompleted: today,
+        completedDates: completedDates
     });
 
     // XP SYSTEM

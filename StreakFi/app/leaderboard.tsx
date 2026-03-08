@@ -1,6 +1,7 @@
-import Leaderboard from "@/components/leaderboard/leaderboard";
-import React from "react";
+import React from 'react'
 
-export default function LeaderboardScreen() {
-  return <Leaderboard />;
+export default function leaderboard() {
+  return (
+    <div>leaderboard</div>
+  )
 }

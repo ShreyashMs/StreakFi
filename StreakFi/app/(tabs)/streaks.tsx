@@ -53,7 +53,6 @@ export default function Streaks() {
       <Text style={styles.streak}>
         🔥 {item.streak || 0}
       </Text>
-
     </View>
 
   );

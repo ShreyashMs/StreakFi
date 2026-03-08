@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+// import "../../polyfills";
 import { updateLoginStreak } from "../../utils/loginStreak";
 
 export default function Index() {
