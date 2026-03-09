@@ -12,7 +12,7 @@ export function useWallet() {
     const result = await transact(async (wallet) => {
 
       const auth = await wallet.authorize({
-        chain: "solana:devnet",
+        chain: "solana:mainnet",
         identity: {
           name: "StreakFi",
           uri: "https://streakfi.app",

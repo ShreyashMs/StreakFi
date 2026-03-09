@@ -118,7 +118,7 @@ export default function CreateHabit() {
           <Text style={styles.label}>Duration</Text>
 
           <View style={styles.durationContainer}>
-            {[5, 10, 20, 30, 60].map((d) => (
+            {[10, 20, 30, 60].map((d) => (
               <TouchableOpacity
                 key={d}
                 style={[

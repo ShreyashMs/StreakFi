@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { activateXPBooster } from "../../utils/boosterSystem";
 
 export default function Boosters() {
@@ -63,6 +63,7 @@ export default function Boosters() {
   return (
 
     <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
+<SafeAreaView style={{flex:1,padding:20}}>
 
       <Text style={styles.header}>
         Boosters
@@ -98,7 +99,8 @@ export default function Boosters() {
         </TouchableOpacity>
 
       </View>
-
+  
+</SafeAreaView>
     </LinearGradient>
 
   );
@@ -107,12 +109,13 @@ export default function Boosters() {
 
 const styles = StyleSheet.create({
 
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  container: { flex: 1, padding: 20 },
 
   header: {
     color: "white",
     fontSize: 28,
-    marginBottom: 20
+    fontWeight: "bold",
+    marginBottom: 20,
   },
 
   card: {

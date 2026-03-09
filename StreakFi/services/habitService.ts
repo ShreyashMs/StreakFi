@@ -1,19 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDoc,
-    getDocs,
-    query,
-    Timestamp,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { getXPBooster } from "../utils/boosterSystem";
 import { calculateXP } from "../utils/xpCalculator";
 import { db } from "./firebase";
+import { sendReward } from "./tokenRewardService";
 
 export const createHabit = async (
   wallet: string,
@@ -140,6 +141,7 @@ export const completeHabit = async (habitId: string) => {
   await AsyncStorage.setItem("xp", xp.toString());
 
   // Update user XP in Firestore
+  // Update user XP in Firestore
   if (habit.wallet) {
 
     const userRef = doc(db, "users", habit.wallet);
@@ -149,6 +151,12 @@ export const completeHabit = async (habitId: string) => {
       await updateDoc(userRef, {
         xp: xp
       });
+    }
+
+    try {
+      await sendReward(habit.wallet, 0.001);
+    } catch (err) {
+      console.log("Reward failed", err);
     }
 
   }

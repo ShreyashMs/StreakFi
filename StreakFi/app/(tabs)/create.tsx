@@ -4,7 +4,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   Platform,
   SafeAreaView,
@@ -12,10 +11,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import ThemedModal from "../../components/ThemedModal";
 import { HABIT_SUGGESTIONS } from "../../constants/habits";
 import { createHabit } from "../../services/habitService";
+import { scheduleHabitReminder } from "../../services/notificationService";
 
 export default function CreateHabit() {
 
@@ -26,6 +27,9 @@ export default function CreateHabit() {
   const [duration, setDuration] = useState(10);
   const expiryDate = new Date(time);
   expiryDate.setDate(expiryDate.getDate() + 7);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [navigateBack, setNavigateBack] = useState(false);
 
   const handleSearch = (text: string) => {
     setTitle(text);
@@ -47,25 +51,44 @@ export default function CreateHabit() {
       const wallet = await AsyncStorage.getItem("wallet");
 
       if (!wallet || !title) {
-        Alert.alert("Missing info", "Please select a habit or connect the wallet again !!!");
+        setModalMessage("Please select a habit or connect the wallet again!");
+        setNavigateBack(false);
+        setModalVisible(true);
         return;
       }
 
       await createHabit(wallet, title, time, duration, expiryDate);
 
-      Alert.alert("Success 🎉", "Habit created");
+      await scheduleHabitReminder(title, time);
+
+      setModalMessage("Habit created successfully 🎉");
+      setNavigateBack(true);
+      setModalVisible(true);
 
       setTitle("");
       router.back();
 
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Could not create habit");
+      setModalMessage("Could not create habit");
+      setNavigateBack(false);
+      setModalVisible(true);
     }
   };
 
   return (
     <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
+      <ThemedModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => {
+          setModalVisible(false);
+
+          if (navigateBack) {
+            router.back();
+          }
+        }}
+      />
       <SafeAreaView style={styles.container}>
         <View>
 
@@ -99,7 +122,7 @@ export default function CreateHabit() {
             onPress={() => setShowPicker(true)}
           >
             <Text style={styles.timeText}>
-              Reminder: {time.toLocaleTimeString()}
+              Reminder: {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </Text>
           </TouchableOpacity>
 
@@ -145,11 +168,12 @@ export default function CreateHabit() {
 
 const styles = StyleSheet.create({
 
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  container: { flex: 1, padding: 20 },
 
   title: {
     color: "white",
-    fontSize: 24,
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: 20,
   },
 

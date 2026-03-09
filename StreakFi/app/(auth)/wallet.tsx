@@ -2,9 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useWallet } from "../../hooks/useWallet";
 
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "react-native";
 import { createUserIfNotExists } from "../../services/userService";
 
@@ -47,37 +48,28 @@ export default function Wallet() {
     <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
 
       <Text style={styles.icon}>🔗</Text>
+      <Image
+        source={require("../../assets/images/solana.png")}
+        style={styles.image}
+      />
 
-      <Text style={styles.title}>
-        Connect Wallet
-      </Text>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#4E44CE" }]}
-        onPress={connectWallet}
-      >
-        <View style={styles.row}>
-          <Image
-            source={require("../../assets/images/phantom.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.text}>Connect Phantom</Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#2563eb" }]}
-        onPress={connectWallet}      >
-        <View style={styles.row}>
-
-          <Image
-            source={require("../../assets/images/solflare.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.text}>Connect Solflare</Text>
-        </View>
-      </TouchableOpacity>
-
+<TouchableOpacity
+  style={[styles.button, { backgroundColor: "#4E44CE", opacity: loading ? 0.7 : 1 }]}
+  onPress={connectWallet}
+  disabled={loading}
+>
+  <View style={styles.row}>
+    {loading ? (
+      <ActivityIndicator size="small" color="#fff" />
+    ) : (
+      <>
+        <Text style={styles.text}>Connect Wallet</Text>
+        <Ionicons name="wallet" size={30} color={"#c8c6dd"} />
+      </>
+    )}
+  </View>
+</TouchableOpacity>
     </LinearGradient>
 
   );
@@ -114,12 +106,15 @@ const styles = StyleSheet.create({
   text: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "600",marginHorizontal:5
   }, row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
-
-
+  image: {
+    width: 250,
+    height: 130,
+    marginBottom: 40,
+  },
 });

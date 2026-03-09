@@ -9,7 +9,7 @@ export const connectWallet = async () => {
     const result = await transact(async (wallet) => {
 
       const authorizationResult = await wallet.authorize({
-        cluster: "devnet",
+        cluster: "mainnet-beta",
         identity: {
           name: "Solana Streaks",
         },

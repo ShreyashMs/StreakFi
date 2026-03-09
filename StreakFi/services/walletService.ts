@@ -12,7 +12,7 @@ const connect = async (base: string) => {
     const url =
       `${base}?` +
       `app_url=https://streakfi.app&` +
-      `cluster=devnet&` +
+      `cluster=mainnet-beta&` +
       `redirect_link=${encodeURIComponent(REDIRECT)}`;
 
     let handled = false;

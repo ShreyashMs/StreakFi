@@ -91,9 +91,9 @@ export default function HabitsPage() {
 
       <View style={styles.actions}>
 
-        <TouchableOpacity style={styles.editButton}>
+        {/* <TouchableOpacity style={styles.editButton}>
           <Text style={styles.editText}>Edit</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={styles.deleteButton}
@@ -136,8 +136,8 @@ export default function HabitsPage() {
         renderItem={renderActiveHabit}
         keyExtractor={(item) => item.id}
       />
-
-      <Text style={styles.section}>Expired Habits</Text>
+      {expiredHabits.length > 0 ?
+        <Text style={styles.section}>Expired Habits</Text> : null}
 
       <FlatList
         data={expiredHabits}
@@ -152,11 +152,12 @@ export default function HabitsPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  container: { flex: 1,  padding: 20 },
   header: {
-    fontSize: 28,
     color: "white",
-    marginBottom: 20
+        fontSize: 18,
+        fontWeight: "600",
+        marginBottom: 10,
   },
 
   section: {
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e293b",
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 8,
     flexDirection: "row",
     justifyContent: "space-between"
   },
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
 
   deleteButton: {
     backgroundColor: "#ef4444",
-    padding: 8,
+    padding: 5,
     borderRadius: 8
   },
 
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e293b",
     padding: 16,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     opacity: 0.4

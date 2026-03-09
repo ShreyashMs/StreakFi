@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function Intro() {
   return (
@@ -13,12 +13,12 @@ export default function Intro() {
         Explore NFTs rewards and booster mechanics to grow your streak.
       </Text>
 
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         <Text style={styles.cardTitle}>🚀  Booster for you </Text>
         <Text style={styles.cardText}>
           Boost your streak rewards with special NFT boosters.
         </Text>
-      </View>
+      </View> */}
 
       <TouchableOpacity
         style={styles.button}
