@@ -32,7 +32,6 @@ export default function Wallet() {
 
     } catch (e) {
 
-      console.log(e);
       Alert.alert("Wallet connection failed");
 
     } finally {

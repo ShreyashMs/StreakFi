@@ -3,7 +3,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   Platform,
   SafeAreaView,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ThemedModal from "../components/ThemedModal";
 import { HABIT_SUGGESTIONS } from "../constants/habits";
 import { createHabit } from "../services/habitService";
 
@@ -23,6 +23,10 @@ export default function CreateHabit() {
   const [time, setTime] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [duration, setDuration] = useState(10);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const expiryDate = new Date(time);
   expiryDate.setDate(expiryDate.getDate() + 7);
 
@@ -46,26 +50,35 @@ export default function CreateHabit() {
       const wallet = await AsyncStorage.getItem("wallet");
 
       if (!wallet || !title) {
-        Alert.alert("Missing info", "Please select a habit");
+        setModalMessage("Please select a habit or connect wallet.");
+        setModalVisible(true);
         return;
       }
 
       await createHabit(wallet, title, time, duration, expiryDate);
 
-      Alert.alert("Success 🎉", "Habit created");
+      setModalMessage("Habit created successfully 🎉");
+      setModalVisible(true);
 
       setTitle("");
+      setSuggestions([]);
 
     } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "Could not create habit");
+      setModalMessage("Could not create habit.");
+      setModalVisible(true);
     }
   };
 
   return (
-    <LinearGradient  colors={["#4c1d95", "#0f172a"]} style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
+    <LinearGradient colors={["#4c1d95", "#0f172a"]} style={{ flex: 1 }}>
 
+      <ThemedModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+      />
+
+      <SafeAreaView style={styles.container}>
         <View>
 
           <Text style={styles.title}>Create Habit</Text>
@@ -98,7 +111,10 @@ export default function CreateHabit() {
             onPress={() => setShowPicker(true)}
           >
             <Text style={styles.timeText}>
-              Reminder: {time.toLocaleTimeString()}
+              Reminder: {time.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </Text>
           </TouchableOpacity>
 
@@ -146,6 +162,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
+    padding: 20,
   },
 
   title: {

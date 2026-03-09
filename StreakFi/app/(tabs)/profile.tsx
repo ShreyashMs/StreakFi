@@ -4,12 +4,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ThemedModal from "../../components/ThemedModal";
 import { disconnectWallet } from "../../services/walletService";
 
 export default function Profile() {
 
   const [wallet, setWallet] = useState<string | null>(null);
   const [xp, setXP] = useState(0);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const router = useRouter();
 
   useEffect(() => {
@@ -36,16 +41,27 @@ export default function Profile() {
     if (!wallet) return;
 
     await Clipboard.setStringAsync(wallet);
-    alert("Wallet address copied!");
+
+    setModalMessage("Wallet address copied!");
+    setModalVisible(true);
 
   };
 
   const logout = async () => {
 
-    await disconnectWallet();
-    setWallet(null);
+    try {
 
-    router.replace("/(auth)/onboarding");
+      await disconnectWallet();
+      setWallet(null);
+
+      router.replace("/(auth)/onboarding");
+
+    } catch (error) {
+
+      setModalMessage("Failed to disconnect wallet.");
+      setModalVisible(true);
+
+    }
 
   };
 
@@ -98,6 +114,14 @@ export default function Profile() {
             Disconnect Wallet
           </Text>
         </TouchableOpacity>
+
+        {/* Modal */}
+        <ThemedModal
+          visible={modalVisible}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+        />
+
       </SafeAreaView>
     </LinearGradient>
 
@@ -109,7 +133,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding:20
+    padding: 20
   },
 
   header: {

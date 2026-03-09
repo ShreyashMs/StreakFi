@@ -20,8 +20,6 @@ export default function Index() {
 
       const storedWallet = await AsyncStorage.getItem("wallet");
 
-      console.log("Stored wallet: ", storedWallet);
-
       setWallet(storedWallet);
       setChecked(true);
     };

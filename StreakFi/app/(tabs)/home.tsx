@@ -1,210 +1,281 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import HabitCard from "../../components/habitCard";
-import StatCard from "../../components/StatCard";
-import useHabits from "../../hooks/useHabits";
+import { useCallback, useState } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import ThemedModal from "../../components/ThemedModal";
+import { deleteHabit, getHabits } from "../../services/habitService";
 import { getLevel, getNextLevelXP } from "../../utils/xpSystem";
 
-export default function Home() {
+export default function HabitsPage() {
 
-  const { habits } = useHabits();
-  const router = useRouter();
+  const [activeHabits, setActiveHabits] = useState<any[]>([]);
+  const [expiredHabits, setExpiredHabits] = useState<any[]>([]);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
 
   const [xp, setXP] = useState(0);
   const [level, setLevel] = useState(1);
   const [nextXP, setNextXP] = useState(200);
-  const [loginStreak, setLoginStreak] = useState<number>(0);
-  const [lastLogin, setLastLogin] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [canClaim, setCanClaim] = useState(false);
 
+  const loadXP = async () => {
 
-  const getLoginStreak = async () => {
-    try {
-      const streak = await AsyncStorage.getItem("loginStreak");
-      const last = await AsyncStorage.getItem("lastLogin");
+    const storedXP = await AsyncStorage.getItem("xp");
+    const value = storedXP ? parseInt(storedXP) : 0;
 
-      setLoginStreak(streak ? parseInt(streak) : 0);
-      setLastLogin(last);
-    } catch (error) {
-      console.log("Error getting streak:", error);
-    } finally {
-      setLoading(false);
-    }
+    setXP(value);
+
+    const lvl = getLevel(value);
+    const next = getNextLevelXP(value);
+
+    setLevel(lvl);
+    setNextXP(next);
+
+    setCanClaim(value >= next);
+
   };
 
+  const loadHabits = async () => {
 
-  // top 3 streak habits
-  const topHabits = [...habits]
-    .sort((a, b) => (b.streak || 0) - (a.streak || 0))
-    .slice(0, 3);
+    const wallet = await AsyncStorage.getItem("wallet");
 
-  // stats
-  const totalHabits = habits.length;
+    if (!wallet) return;
 
-  const xpToday = habits.reduce((sum, h) => {
-    if (h.completedToday) return sum + (h.xp || 0);
-    return sum;
-  }, 0);
+    const habits = await getHabits(wallet);
 
-  const highestStreak = habits.reduce((max, h) => {
-    return Math.max(max, h.streak || 0);
-  }, 0);
+    const today = new Date();
 
-  useEffect(() => {
+    const active: any[] = [];
+    const expired: any[] = [];
 
-    const loadXP = async () => {
+    habits.forEach((habit: any) => {
 
-      const storedXP = await AsyncStorage.getItem("xp");
+      const expiry = habit.expiryDate
+        ? new Date(habit.expiryDate.seconds * 1000)
+        : null;
 
-      const value = storedXP ? parseInt(storedXP) : 0;
+      if (expiry && expiry < today) {
+        expired.push(habit);
+      } else {
+        active.push(habit);
+      }
 
-      setXP(value);
-      setLevel(getLevel(value));
-      setNextXP(getNextLevelXP(value));
+    });
 
-    };
+    setActiveHabits(active);
+    setExpiredHabits(expired);
 
-    loadXP();
-    getLoginStreak();
+  };
 
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadHabits();
+      loadXP();
+    }, [])
+  );
+
+  const progressPercent = Math.min((xp / nextXP) * 100, 100);
+
+  const handleClaimReward = async () => {
+
+    const newXP = xp - nextXP;
+
+    await AsyncStorage.setItem("xp", newXP.toString());
+
+    const lvl = getLevel(newXP);
+    const next = getNextLevelXP(newXP);
+
+    setXP(newXP);
+    setLevel(lvl);
+    setNextXP(next);
+    setCanClaim(false);
+
+  };
+
+  const handleDelete = (habitId: string) => {
+
+    setSelectedHabitId(habitId);
+    setModalMessage("Are you sure you want to delete this habit?");
+    setModalVisible(true);
+
+  };
+
+  const confirmDelete = async () => {
+
+    if (!selectedHabitId) return;
+
+    await deleteHabit(selectedHabitId);
+
+    setModalVisible(false);
+    setSelectedHabitId(null);
+
+    loadHabits();
+
+  };
+
+  const renderActiveHabit = ({ item }: any) => (
+    <View style={styles.card}>
+
+      <View>
+        <Text style={styles.title}>{item.title}</Text>
+
+        <Text style={styles.info}>
+          {item.duration} min • {item.xp} XP
+        </Text>
+
+        {item.streak ?
+          <Text style={styles.streak}>
+            🔥 {item.streak || 0} day streak
+          </Text>
+          : null}
+
+      </View>
+
+      <View style={styles.actions}>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(item.id)}
+        >
+          <Text style={styles.deleteText}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+
+    </View>
+  );
+
+  const renderExpiredHabit = ({ item }: any) => (
+    <View style={styles.expiredCard}>
+
+      <View>
+        <Text style={styles.expiredTitle}>
+          {item.title}
+        </Text>
+
+        <Text style={styles.expiredInfo}>
+          {item.duration} min • {item.xp} XP
+        </Text>
+      </View>
+
+      <Text style={styles.expiredLabel}>
+        Expired
+      </Text>
+
+    </View>
+  );
 
   return (
+
     <LinearGradient colors={["#4c1d95", "#0f172a"]} style={styles.container}>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Dashboard</Text>
-        <View style={styles.levelCard}>
 
-          <Text style={styles.levelText}>
-            Level {level}
-          </Text>
+      <Text style={styles.header}>
+        My Habits
+      </Text>
 
-          <View style={styles.xpBar}>
-            <View
-              style={[
-                styles.xpFill,
-                { width: `${(xp / nextXP) * 100}%` }
-              ]}
-            />
-          </View>
+      {/* LEVEL CARD */}
 
-          <Text style={styles.xpText}>
-            {xp} / {nextXP} XP
-          </Text>
+      <View style={styles.levelCard}>
 
+        <Text style={styles.levelText}>
+          Level {level}
+        </Text>
+
+        <View style={styles.xpBar}>
+          <View
+            style={[
+              styles.xpFill,
+              { width: `${progressPercent}%` }
+            ]}
+          />
         </View>
 
-        {/* Stats Row */}
+        <Text style={styles.xpText}>
+          {xp} / {nextXP} XP
+        </Text>
 
-        <View style={styles.statsRow}>
-          {/* <StatCard
-          number={loginStreak}
-          label="Login Streak"
-        /> */}
+      </View>
 
-          <StatCard
-            number={totalHabits}
-            label="Habits"
-          />
-
-          <StatCard
-            number={xpToday}
-            label="XP Today"
-          />
-
-          <StatCard
-            number={highestStreak}
-            label="Best Streak"
-          />
-
-        </View>
-
-        {/* Top Habits */}
-
-        <View style={styles.sectionHeader}>
-
-          <Text style={styles.sectionTitle}>
-            Top Streak Habits
+      {canClaim && (
+        <TouchableOpacity
+          style={styles.claimButton}
+          onPress={handleClaimReward}
+        >
+          <Text style={styles.claimText}>
+            Claim Reward
           </Text>
+        </TouchableOpacity>
+      )}
 
-          <TouchableOpacity
-            onPress={() => router.push("/allHabits")}
-          >
-            <Text style={styles.viewAll}>
-              View All
-            </Text>
-          </TouchableOpacity>
+      <Text style={styles.section}>
+        Active Habits
+      </Text>
 
-        </View>
+      <FlatList
+        data={activeHabits}
+        renderItem={renderActiveHabit}
+        keyExtractor={(item) => item.id}
+      />
 
-        <FlatList
-          data={topHabits}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <HabitCard habit={item} />
-          )}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              No habits created yet
-            </Text>
-          }
-        />
-      </SafeAreaView>
+      {expiredHabits.length > 0 ?
+        <Text style={styles.section}>
+          Expired Habits
+        </Text> : null}
+
+      <FlatList
+        data={expiredHabits}
+        renderItem={renderExpiredHabit}
+        keyExtractor={(item) => item.id}
+      />
+
+      <ThemedModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={confirmDelete}
+      />
+
     </LinearGradient>
+
   );
+
 }
 
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    padding: 20,
+    padding: 20
   },
 
-  title: {
+  header: {
     color: "white",
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 25,
-  },
-
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    fontSize: 18,
+    fontWeight: "600",
     marginBottom: 10,
   },
 
-  sectionTitle: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "600",
-  },
-
-  viewAll: {
-    color: "#38bdf8",
-    fontSize: 14,
-  },
-
-  emptyText: {
+  section: {
     color: "#94a3b8",
     marginTop: 20,
-    textAlign: "center",
+    marginBottom: 10
   },
+
   levelCard: {
     backgroundColor: "#1e293b",
     padding: 16,
     borderRadius: 12,
-    marginBottom: 20
+    marginBottom: 16
   },
 
   levelText: {
@@ -229,4 +300,81 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     marginTop: 6
   },
+
+  claimButton: {
+    backgroundColor: "#22c55e",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 20
+  },
+
+  claimText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16
+  },
+
+  card: {
+    backgroundColor: "#1e293b",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+
+  title: {
+    color: "white",
+    fontSize: 18
+  },
+
+  info: {
+    color: "#94a3b8"
+  },
+
+  actions: {
+    flexDirection: "row",
+    gap: 10
+  },
+
+  deleteButton: {
+    backgroundColor: "#ef4444",
+    padding: 5,
+    borderRadius: 8
+  },
+
+  deleteText: {
+    color: "white"
+  },
+
+  expiredCard: {
+    backgroundColor: "#1e293b",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    opacity: 0.4
+  },
+
+  expiredTitle: {
+    color: "#d1d5db",
+    fontSize: 18
+  },
+
+  expiredInfo: {
+    color: "#9ca3af"
+  },
+
+  expiredLabel: {
+    color: "#9ca3af"
+  },
+
+  streak: {
+    color: "#f97316",
+    fontSize: 14,
+    marginTop: 4
+  },
+
 });

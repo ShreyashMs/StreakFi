@@ -22,8 +22,6 @@ const connect = async (base: string) => {
       if (handled) return;
       handled = true;
 
-      console.log("Returned URL:", url);
-
       const parsed = Linking.parse(url);
 
       const wallet = parsed.queryParams?.public_key as string;

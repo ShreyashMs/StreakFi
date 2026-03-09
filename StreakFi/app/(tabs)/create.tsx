@@ -45,7 +45,6 @@ export default function CreateHabit() {
     setTitle(habit);
     setSuggestions([]);
   };
-
   const handleCreate = async () => {
     try {
       const wallet = await AsyncStorage.getItem("wallet");
@@ -66,10 +65,9 @@ export default function CreateHabit() {
       setModalVisible(true);
 
       setTitle("");
-      router.back();
+      setSuggestions([]);
 
     } catch (error) {
-      console.log(error);
       setModalMessage("Could not create habit");
       setNavigateBack(false);
       setModalVisible(true);

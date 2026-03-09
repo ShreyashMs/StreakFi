@@ -1,32 +1,35 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ThemedModal from "../../components/ThemedModal"; // import modal
 import { createUserIfNotExists } from "../../services/userService";
 
 export default function Login() {
 
   const [loading, setLoading] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const connectWallet = async () => {
     try {
       setLoading(true);
 
-      // temporary fake wallet for development
-      const walletAddress = "demo_wallet_" + Math.floor(Math.random() * 100000);
+      const walletAddress =
+        "demo_wallet_" + Math.floor(Math.random() * 100000);
 
       await createUserIfNotExists(walletAddress);
 
-      console.log("Wallet:", walletAddress);
-
       await AsyncStorage.setItem("wallet", walletAddress);
 
-      // navigate to main app
       router.replace("/(tabs)/home");
 
     } catch (error) {
-      console.log(error);
-      Alert.alert("Connection failed");
+
+      setModalMessage("Connection failed due to some issue.");
+      setModalVisible(true);
+
     } finally {
       setLoading(false);
     }
@@ -34,6 +37,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
+
       <Image
         source={require("../../assets/images/splash-icon.png")}
         style={styles.image}
@@ -48,6 +52,14 @@ export default function Login() {
           {loading ? "Connecting..." : "Connect Phantom / Solflare"}
         </Text>
       </TouchableOpacity>
+
+      {/* Modal */}
+      <ThemedModal
+        visible={modalVisible}
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+      />
+
     </View>
   );
 }

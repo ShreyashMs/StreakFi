@@ -24,7 +24,6 @@ export default function Swap() {
         parseFloat(amount) * 1000000000
       );
 
-      console.log(quote);
 
       Alert.alert("Swap quote received");
 
