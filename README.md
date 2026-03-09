@@ -142,7 +142,7 @@ utils
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/your-username/streakfi-mobile.git
+git clone https://github.com/ShreyashMs/StreakFi.git
 ```
 
 ### 2️⃣ Install dependencies
@@ -256,3 +256,4 @@ Developed by the StreakFi team.
 # ⭐ Support
 
 If you like this project, consider giving the repository a ⭐ on GitHub.
+
